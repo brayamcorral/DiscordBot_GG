@@ -1,0 +1,72 @@
+#                Python with Discord api
+# Code written by Brayam Corral, Samuel Min, Edgar Ubaldo. 
+
+#                         RULES
+# Discord bot lets you play gungame, variant of rocks, papers, scissors.
+# Player plays against the computer and can shoot, block or reload.
+# Blocking, negates a shooting action from the computer.
+# Shooting, must have a bullet, shoots the oponent and wins if 
+# the oponent is reloading. Reloading increase number of bullets owned.
+# If both players shoot, nothing happens other than losing a bullet.
+
+
+# Global variables:
+# shield : 0 | shoot : 1 | reload : 2
+cpu_bullets = 1
+p1_bullets = 1
+cpu_won = False
+p1_won = False
+p1_action = 0
+cpu_action = 0
+moveOutcome = [ [0,0,0] [0,0,-1] ,[0, 1, 0] ]
+move = 0
+gunGame = False
+
+await message:
+    if message == $play
+        set all variables to intial values
+        gunGame = True
+
+    # Gets the users action
+    if(gunGame and !p1_won and !cpu_won)
+        await message.channel.send("Choose Action: " + "\n" + "0:" + shield + " 1:" + shoot + " 2:" + reload + "\n")
+        if message.content.startswith($0)
+            p1_gameAction = 0
+        if message.content.startswith($1)
+            p1_gameAction = 1
+            p1_bullets--
+        if message.content.startswith($2)
+            p1_gameAction = 2
+            p1_bullets++
+
+    # CPU chooses action
+
+    if(cpu.bullet != 0): choose random of any action ([shoot = 1, reload = 2, block = 0])   
+        if(reload) : cpuAction = 2
+        elif(shoot): cpuAction = 1
+        else cpuAction = 0
+    else if (cpu.bullet == 0)
+        check if p1 bullets == 0
+            cpu does reload action (cpuAction = 2)
+        else
+            cpu chooses randomly between [block, reload] actions
+            if(reload: cpuAction=2 else: cpuAction=0)
+    else choose block action
+        cpuAction = 0
+
+    # Prints out each player's bullets and determines if a player has shot one another (won) yet.
+    if (!p1_won and !cpu_won):
+        print("Player Bullets =" + p1_bullets)
+        print("Player Bullets =" + p1_bullets)
+        if moveOutcome[cpuAction][playerAction] == 1:
+            p1_won = true
+        if gameStates[cpuAction][playerAction] == -1:
+            cpu_won = true  
+        if gameStates[cpuAction][playerAction] == 0:
+            await message.channel.send("Choose Action: " + "\n" + "0:" + shield + " 1:" + shoot + " 2:" + reload + "\n")
+        
+    # Prints which player won
+    if(p1_won)
+        await message.channel.send("YOU WON")
+    if(cpu_won)
+        await message.channel.send("YOU LOSE")

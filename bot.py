@@ -16,7 +16,7 @@ import os
 import requests
 import json 
 
-BOT_TOKEN = 'NzkxMDk2ODY0MTQ5NjAyMzU0.X-KMXg.RyTPQgSrFfd0SJiDHiZtmjvMza0'
+BOT_TOKEN = ''
 client = discord.Client()
 
 # Global variables:

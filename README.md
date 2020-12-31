@@ -1,9 +1,9 @@
   
-                         bot.py
-               Python with Discord api
+bot.py
+Python with Discord api
 Code written by Brayam Corral, Samuel Min, Edgar Ubaldo. 
 
-                         RULES
+RULES
  Discord bot lets you play gungame, variant of rocks, papers, scissors.
  Player plays against the computer and can shoot, block or reload.
  Blocking, negates a shooting action from the computer.

@@ -113,24 +113,33 @@ async def on_message(message):
         if(cpu_action == 2): cpu_bullets += 1
         if(cpu_action == 1): cpu_bullets -= 1
 
+    # Gets the users action
     if(gunGame):
-        # Gets the users action
         if((not p1_won) and (not cpu_won)):
+
+            # Goes here if player chose to shield
             if message.content==('$0'):
-                correctInput = True
                 p1_action = 0
                 playerTurn = True
+                correctInput = True
                 cpuAction()
+
+            # Goes here if player chose to shoot
             if message.content==('$1'):
                 correctInput = True
+
+                # Checks if player has enough bullets. esle...
                 if (p1_bullets>0):
                     p1_action = 1
                     p1_bullets -= 1
                     playerTurn = True
                     cpuAction()
+
+                # Player needs to try anoher action
                 else:
                     await message.channel.send("```No more bullets. Try Again.```")
                     return
+            # Goes here if player decided to shield
             if message.content==('$2'):
                 correctInput = True
                 p1_action = 2
@@ -146,45 +155,50 @@ async def on_message(message):
     if (not p1_won and not cpu_won):
         disc_message = ""
         
+        # Prints the amount of bullets each player has... up to 5 bullets
         if cpu_bullets > 5:
             cpu_bullets = 5
         if p1_bullets > 5:
             p1_bullets = 5
-
         disc_message += "```     P1 Bullets     CPU Bullets"+"\n"
-
         disc_message += "     "
         for n in range(p1_bullets):
             disc_message += "\u25AE"
         for n in range(5 - p1_bullets):
             disc_message += "\u25AF"
-
         disc_message += "      "
-
         for n in range(cpu_bullets):
             disc_message += "\u25AE"
         for n in range(5 - cpu_bullets):
             disc_message += "\u25AF"
-
         disc_message += "    "
-
         disc_message += "\n\n"
 
         # choices =    Block,          Shoot,        Reload
         choices = ['\U0001f6e1\uFE0F', '\U0001F3F9', '\U0001F504']
 
+        # After the player chooses their turn, the outcome is determined...
         if(playerTurn):
             disc_message += "       P1: " + choices[p1_action] + "        "  + "CPU: " + choices[cpu_action] + "\n\n"
+
+            # Player wins if they shoots and computer reloads
             if moveOutcome[cpu_action][p1_action] == 1:
                 p1_won = True
+    
+            # CPU wins if it shoots and player reloads
             if moveOutcome[cpu_action][p1_action] == -1:
-                cpu_won = True  
+                cpu_won = True
+
+            # Reset the player turn to false since the turn ended  
             playerTurn = False
+
+        # Prints the actions possible with their corresponding picture
         disc_message += "Choose Action: \U0001f6e1\uFE0F[$0] \U0001F3F9[$1] \U0001F504[$2] " + "\n"
         await message.channel.send(disc_message + "```")
+
         correctInput = False
 
-    # Prints which player won
+    # Prints the outcome of the game
     if(p1_won):
         await message.channel.send("```YOU WON```")
         gunGame = False

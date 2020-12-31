@@ -1,137 +1,184 @@
-# Edgar
+#                           bot.py
+#                Python with Discord api
+# Code written by Brayam Corral, Samuel Min, Edgar Ubaldo. 
+
+#                         RULES
+# Discord bot lets you play gungame, variant of rocks, papers, scissors.
+# Player plays against the computer and can shoot, block or reload.
+# Blocking, negates a shooting action from the computer.
+# Shooting, must have a bullet, shoots the oponent and wins if 
+# the oponent is reloading. Reloading increase number of bullets owned.
+# If both players shoot, nothing happens other than losing a bullet.
+
 import random
+import discord
+import os 
+import requests
+import json 
 
-class CPU:
-    def __init__(self):
-        self.score = 0
-        self.gun = GunStance()
-   
-    def getScore(self):
-        return self.score
- 
-    def incrementScore(self):
-        self.score += 1
+BOT_TOKEN = ''
+client = discord.Client()
 
-    def getAction(self, p1_bullets):
-        print("CPU ", end="")
-        if(self.gun.getBullet() > 0):
-            num = random.randint(0,2)
-            return self.gun.setAction(num)
-        elif(self.gun.getBullet() == 0):
+# Global variables:
+# shield : 0 | shoot : 1 | reload : 2
+cpu_bullets = 1
+p1_bullets = 1
+cpu_won = False
+p1_won = False
+p1_action = 0
+cpu_action = 0
+moveOutcome = [ [0,0,0], [0,0,-1], [0, 1, 0] ]
+move = 0
+gunGame = False
+playerTurn = False
+correctInput = True
+
+
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+
+@client.event
+async def on_message(message):
+    global cpu_bullets, p1_bullets, cpu_won, p1_won, p1_action, cpu_action, moveOutcome, move, gunGame, playerTurn, correctInput
+
+    if message.author == client.user:
+        return
+
+    if message.content==('$hello'):
+        await message.channel.send('```Hello World!```')
+
+    # Game starts with the keyWord: $play
+    if message.content==('$play'):
+        if(gunGame): 
+            await message.channel.send('```Game has already started```')
+        else:
+            await message.channel.send('```Starting game...```')
+            cpu_bullets = 1
+            p1_bullets = 1
+            cpu_won = False
+            p1_won = False
+            p1_action = 0
+            cpu_action = 0
+            moveOutcome = [ [0,0,0], [0,0,-1] ,[0, 1, 0] ]
+            move = 0
+            gunGame = True
+            correctInput = True
+
+    if message.content==('$help'):
+        help_message =  '```Play against the computer: Can shoot, block, or reload. \n' \
+                        'Blocking  -- Negates a shooting action from the computer. \n' \
+                        'Reloading -- Increases number of bullets owned (up to a maximum of 5). \n' \
+                        'Shooting  -- Must have a bullet. If the oponent is reloading, you win. \n' \
+                        '             If both players shoot, nothing happens, other than losing a bullet. \n```' \
+
+        await message.channel.send(help_message)
+        return 
+
+    if message.content==('$end'):
+        if(gunGame):
+            await message.channel.send('```Ending game...```')
+            gunGame = False
+            return
+        else:
+             await message.channel.send('```No game in progress```')
+             return
+    
+        
+    # CPU chooses action
+    def cpuAction():
+        global cpu_bullets, cpu_action
+        if(cpu_bullets != 0):
             if(p1_bullets == 0):
-                return self.gun.setAction(2)
+                cpu_action = random.randint(1, 2)
             else:
-                return self.gun.setAction(0 if random.choice([True, False]) else 2)
+                cpu_action = random.randint(0,2)
+        elif (cpu_bullets == 0):
+            if(p1_bullets == 0):
+                cpu_action = 2
+            else:
+                cpu_action = random.choice([0, 2])
         else:
-            return 0
-# Sam 
-class GameEngine:
+            cpu_action = 0
+        if(cpu_action == 2): cpu_bullets += 1
+        if(cpu_action == 1): cpu_bullets -= 1
 
-    def __init__(self, _winningScore, _p1, _p2):
-        self.winningScore = _winningScore
-        self.p1 = _p1
-        self.p2 = _p2
+    if(gunGame):
+        # Gets the users action
+        if((not p1_won) and (not cpu_won)):
+            if message.content==('$0'):
+                correctInput = True
+                p1_action = 0
+                playerTurn = True
+                cpuAction()
+            if message.content==('$1'):
+                correctInput = True
+                if (p1_bullets>0):
+                    p1_action = 1
+                    p1_bullets -= 1
+                    playerTurn = True
+                    cpuAction()
+                else:
+                    await message.channel.send("```No more bullets. Try Again.```")
+                    return
+            if message.content==('$2'):
+                correctInput = True
+                p1_action = 2
+                p1_bullets += 1
+                playerTurn = True
+                cpuAction()
+
+    if(not correctInput):
+        await message.channel.send("```Wrong Input```")
+        return
+
+    # Prints out each player's bullets and determines if a player has shot one another (won) yet.
+    if (not p1_won and not cpu_won):
+        disc_message = ""
         
-    def startGame(self):
-        cpuAction = 0
-        playerAction = 0
-        gameStates = [[0,0,0],[0,0,-1],[0,1,0]]
-        
-        while (self.p2.getScore() != self.winningScore and self.p1.getScore() != self.winningScore):
-            print("Player Bullets =" + str(self.p1.gun.getBullet()))
-            print("Player Bullets =" + str(self.p2.gun.getBullet()))
-            playerAction = self.p1.getAction()
-            cpuAction = self.p2.getAction(self.p1.gun.getBullet())
-            if gameStates[cpuAction][playerAction] == 1:
-                self.p1.incrementScore()
-            elif gameStates[cpuAction][playerAction] == -1:
-                self.p2.incrementScore()
-            print("")
-        if self.p2.getScore()>self.p1.getScore():
-            print("LOSER!!!")
-        else:
-            print("WINNER!!!")
-            
-# Brayam
-class GunStance:
-    def __init__(self):
-        self.bullet = 1
-        
-    def setAction(self, _action) -> int:
-        if _action == 0:
-            print('chose block')           
-            return self.block()
-        elif _action == 1:
-            print('chose shoot')
-            return self.shoot()
-        elif _action == 2:
-            print('chose reload')
-            return self.reload()
+        if cpu_bullets > 5:
+            cpu_bullets = 5
+        if p1_bullets > 5:
+            p1_bullets = 5
 
-    def getBullet(self):
-        return self.bullet
-        
-    def shoot(self) -> int:
-        self.bullet -= 1
-        return 1
+        disc_message += "```P1 Bullets     CPU Bullets"+"\n"
 
-    def block(self) -> int:
-        return 0
+        for n in range(p1_bullets):
+            disc_message += "▮"
+        for n in range(5 - p1_bullets):
+            disc_message += "▯"
 
-    def reload(self) -> int:
-        self.bullet += 1
-        return 2
-        
-# Brayam
-class Player:
-    def __init__(self):
-        self.input = 0
-        self.score = 0
-        self.gun = GunStance()
+        disc_message += "      "
 
-    def getAction(self) -> int:
-        actions = ['shield', 'shoot', 'reload']
-        print("0:" + actions[0] + " 1:" + actions[1] + " 2:" + actions[2] + "\n" + "Choose Action: ")
+        for n in range(cpu_bullets):
+            disc_message += "▮"
+        for n in range(5 - cpu_bullets):
+            disc_message += "▯"
 
-        while(True):
-            # check user input is correct
-            try:
-                self.input = input()
-                val = int(self.input)
-                if(int(self.input) < 0 or int(self.input) > 2 or (self.gun.getBullet() == 0 and int(self.input) == 1)):
-                    print("Invalid action.")
-                    print("0:" + actions[0] + " 1:" + actions[1] + " 2:" + actions[2] + "\n" + "Choose Action: ")
-                    continue
-                break
-            except ValueError:
-                print("That's not an int!")
-                print("0:" + actions[0] + " 1:" + actions[1] + " 2:" + actions[2] + "\n" + "Choose Action: ")
+        disc_message += "    "
 
-        print('You ',end="") 
-        return self.gun.setAction(int(self.input))
-        
-    def checkInt(self, input):
-        while(True):
-            try:
-                val = int(self.input)
-                break
-            except ValueError:
-                print("That's not an int!")
-                
+        disc_message += "\n\n"
 
-    def getScore(self) -> int:
-        return self.score
+        choices = ['🛡️', '🏹', '🔄']
+        if(playerTurn):
+            disc_message += "P1: " + choices[p1_action] + "        "  + "CPU: " + choices[cpu_action] + "\n\n"
+            if moveOutcome[cpu_action][p1_action] == 1:
+                p1_won = True
+            if moveOutcome[cpu_action][p1_action] == -1:
+                cpu_won = True  
+            playerTurn = False
+        disc_message += "Choose Action: 🛡️[$0] 🏹[$1] 🔄[$2] " + "\n"
+        await message.channel.send(disc_message + "```")
+        correctInput = False
 
-    def incrementScore(self):
-        self.score += 1
-        
-# Everyone
-def main():
-    p1 = Player()
-    p2 = CPU()
-    gunGame = GameEngine(1, p1, p2)
-    gunGame.startGame()
-
-if __name__ == "__main__":
-    # execute only if run as a script
-    main()
+    # Prints which player won
+    if(p1_won):
+        await message.channel.send("```YOU WON```")
+        gunGame = False
+        playerTurn = True
+    if(cpu_won):
+        await message.channel.send("```YOU LOSE```")
+        gunGame = False
+        playerTurn = True
+    
+client.run(BOT_TOKEN)

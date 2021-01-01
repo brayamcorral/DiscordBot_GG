@@ -7,7 +7,7 @@
 - [Discord Bot - Gun Game](#discord-bot---gun-game)
     - [Table of Contents](#table-of-contents)
   - [Description](#description)
-    - [Rules](#rules)
+    - [How to play](#how-to-play)
       - [Technologies](#technologies)
   - [How To Use](#how-to-use)
       - [Installation](#installation)
@@ -21,7 +21,7 @@
 
 This Discord bot lets you play gungame: A variant of rock, paper, scissors.
   
-### Rules
+### How to play
 Play against the computer: Can shoot, block, or reload. \
 Blocking  -- Negates a shooting action from the computer. \
 Reloading -- Increases number of bullets owned (up to a maximum of 5). \
@@ -42,15 +42,22 @@ Shooting  -- Must have a bullet. If the oponent is reloading, you win. \
 ## How To Use
 
 #### Installation
+Create a discord bot and add it to your server. Follow the link below for further help. \
+https://realpython.com/how-to-make-a-discord-bot-python/
+
+Grab your discord token and insert into bot.py(line 20)
+```html
+    BOT_TOKEN = 'PUT TOKEN HERE'
+```
+
+Import the following packages using terminal:
+
 Discord API:
 ```html
     pip install discord.py
 ```
-OR
-```html
-    py -3 -m pip install -U discord.py
-```
-Requests package:
+
+ Requests package:
 ```html
     python -m pip install requests
 ```
@@ -94,9 +101,9 @@ SOFTWARE.
 
 ## Contributors
 
-- Brayam Corral Flores - https://www.linkedin.com/in/brayamcorral/
-- Edgar Ubaldo
-- Samuel Min
+- Brayam Corral Flores - https://github.com/BrayamC
+- Edgar Ubaldo - https://github.com/UbaldoEdgar
+- Samuel Min - https://github.com/Samuel-Min
 
 [Back To The Top](#read-me-template)
 

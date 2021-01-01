@@ -103,7 +103,7 @@ SOFTWARE.
 
 - Brayam Corral Flores - https://github.com/BrayamC
 - Edgar Ubaldo - https://github.com/UbaldoEdgar
-- Samuel Min - https://github.com/User2225
+- Samuel Min - https://github.com/Samuel-Min
 
 [Back To The Top](#read-me-template)
 

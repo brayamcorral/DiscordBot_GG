@@ -98,18 +98,25 @@ async def on_message(message):
     # CPU chooses action
     def cpuAction():
         global cpu_bullets, cpu_action
+
+        #Firstly, we check bullets of the cpu, if it does not have any, then it can't do the shoot action
         if(cpu_bullets != 0):
+            #if player has no bullets, then cpu should reload or shoot, as shielding wont be beneficial
             if(p1_bullets == 0):
                 cpu_action = random.randint(1, 2)
             else:
                 cpu_action = random.randint(0,2)
+        #cpu has no bullets, so reloading or shielding are our only options
         elif (cpu_bullets == 0):
+            #again, reload if player has no bullets, else randomly choose btwn shielding n reloading
             if(p1_bullets == 0):
                 cpu_action = 2
             else:
                 cpu_action = random.choice([0, 2])
         else:
             cpu_action = 0
+
+        #2 -> reload so we add 1 to bullet count. 1 -> shoot so we subtract 1 from bullet count
         if(cpu_action == 2): cpu_bullets += 1
         if(cpu_action == 1): cpu_bullets -= 1
 

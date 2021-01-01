@@ -66,7 +66,7 @@ async def on_message(message):
             gunGame = True
             correctInput = True
             playerTurn = False
-            
+    # Prints out rules of the game when the command "$rules" is called       
     if message.content==('$rules'):
         rules_message =  '```Play against the computer: Can shoot, block, or reload. \n' \
                         'Blocking  -- Negates a shooting action from the computer. \n' \
@@ -77,14 +77,16 @@ async def on_message(message):
         await message.channel.send(rules_message)
         return 
 
+    # Prints out the game commands and their functions when the command "$help" is called. 
     if message.content==('$help'):
         help_message =  '```$rules -- Shows rules of GunGame \n' \
                         '$play -- Starts Game \n' \
-                        '$end -- Ends Game' \
+                        '$end -- Ends Game```' \
 
         await message.channel.send(help_message)
         return 
 
+    # Ends the current game session
     if message.content==('$end'):
         if(gunGame):
             await message.channel.send('```Ending game...```')

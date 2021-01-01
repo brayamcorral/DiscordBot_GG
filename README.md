@@ -1,5 +1,6 @@
   
-# Discord Bot - Gun Game
+# Discord Bot - Gun Game 
+Version Beta 1.0
 ![Alt Text](demo.gif)
 
 ### Table of Contents

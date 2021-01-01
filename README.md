@@ -1,6 +1,6 @@
   
 # Discord Bot - Gun Game
-
+![Alt Text](demo.gif)
 
 ### Table of Contents
 
